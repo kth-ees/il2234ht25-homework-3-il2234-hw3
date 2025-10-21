@@ -11,8 +11,28 @@ module average_calc_datapath #(
     output logic [m-1:0] result
 );
 
-    // …
-	// Add your description here
-	// …
-	
+    logic [m + $clog2(n) - 1:0] sum, sum_reg;
+    logic [m + $clog2(n) - 1:0] shift_out;
+
+    assign sum = sum_reg + {{$clog2(n){1'b0}}, inputx};
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            sum_reg <= '0;
+        else if (init_sum)
+            sum_reg <= '0;
+        else if (load)
+            sum_reg <= sum;
+    end
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            shift_out <= '0;
+        else if (init_shift)
+            shift_out <= '0;
+        else if (shift)
+            shift_out <= sum_reg >> $clog2(n); // Divide by n
+    end
+
+    assign result = shift_out[m-1:0];
 endmodule

@@ -7,9 +7,28 @@ module average_calculator #(parameter m = 8, parameter n = 4) (
     output logic done
 );
 
-	// …
-	// Add your description here
-	// …
-	
+    logic load, shift, init_sum, init_shift;
+    
+    average_calc_controller #(n) controller (
+        .clk(clk),
+        .rst_n(rst_n),
+        .start(start),
+        .init_sum(init_sum),
+        .init_shift(init_shift),
+        .load(load),
+        .shift(shift),
+        .done(done)
+    );
+
+    average_calc_datapath #(m, n) datapath (
+        .clk(clk),
+        .rst_n(rst_n),
+        .load(load), // Load only when data is valid
+        .shift(shift),
+        .init_sum(init_sum),
+        .init_shift(init_shift),
+        .inputx(inputx),
+        .result(result)
+    );
 endmodule
 
